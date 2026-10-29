@@ -1,7 +1,15 @@
-﻿# SMS Spam Detection System
+# SMS Spam Detection System
 
 ## Brief description
 A desktop tool that classifies SMS messages as spam or legitimate using two models: a custom **SVM + TF-IDF** pipeline and a pretrained **DistilBERT** classifier, with training and evaluation built in.
+
+## Tech stack
+- Python 3
+- scikit-learn (SVM + TF-IDF)
+- DistilBERT / Hugging Face Transformers
+- PyTorch
+- Tkinter (desktop UI)
+- pandas / NumPy / Matplotlib
 
 ## Project purpose
 Compare classical ML and transformer-based NLP for SMS spam detection, with a simple Tkinter UI for interactive classification and model evaluation.
