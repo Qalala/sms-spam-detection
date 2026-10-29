@@ -1,0 +1,173 @@
+1. Overview of the Application
+
+This is a desktop application using Python Tkinter that detects whether an SMS message is spam or not. It supports two types of models:
+
+Custom Model: SVM (Support Vector Machine) with TF-IDF features.
+
+Pretrained Model: DistilBERT (a lighter BERT variant) fine-tuned on SMS spam data from Hugging Face.
+
+The main goal is to train/evaluate a custom model or use a pretrained model directly to classify new SMS messages.
+
+Key features:
+
+Load and normalize datasets.
+
+Train and evaluate the custom SVM model.
+
+Classify single messages.
+
+Visualize a confusion matrix.
+
+Disable irrelevant UI buttons depending on model choice.
+----------------------------------------------------------------------------------------------
+2. Models Used
+
+A. Custom Model: SVM + TF-IDF
+
+TF-IDF Vectorization: Converts SMS text into numerical features.
+
+ngram_range=(1,2): Considers both single words (unigrams) and pairs of words (bigrams).
+
+min_df=2: Ignores words appearing in fewer than 2 documents.
+
+max_df=0.95: Ignores very common words that appear in more than 95% of messages.
+
+LinearSVC: Linear Support Vector Classifier; finds a hyperplane separating spam and non-spam messages.
+
+Only trains on the loaded dataset. Predictions require the model to be trained first.
+
+B. Pretrained Model: DistilBERT
+
+Model: "mariagrandury/distilbert-base-uncased-finetuned-sms-spam-detection".
+
+Uses Hugging Face Transformers pipeline for text classification.
+
+Works without training, as it’s already fine-tuned.
+
+Converts model outputs to binary labels (0 = not spam, 1 = spam) based on predicted label scores.
+----------------------------------------------------------------------------------------------
+3. How Data is Loaded and Handled
+
+Loading CSV datasets:
+
+Expected columns: "sms" (the message) and "label" (spam/not spam).
+
+Labels are normalized:
+
+1, "spam", "label_1" → 1
+0, "ham", "label_0" → 0
+
+
+This ensures the model only sees binary labels.
+
+Train/Test Split:
+
+train_test_split is used with test_size=0.2 → 80% training, 20% testing.
+
+stratify=y ensures spam/non-spam ratio is preserved in both sets.
+
+Training (Custom model only):
+
+The fit method of SVMTextClassifier vectorizes the text and trains the SVM.
+----------------------------------------------------------------------------------------------
+4. How Classification Works
+
+A. Predicting Single SMS
+
+Custom Model: SMS is vectorized using TF-IDF → SVM predicts label.
+
+Pretrained Model: SMS goes directly into the Hugging Face pipeline → label extracted.
+
+B. Evaluating Model
+
+Both models can predict the test set.
+
+Metrics computed:
+
+Accuracy
+
+Precision
+
+Recall
+
+F1 Score
+
+Confusion Matrix: Visualized with matplotlib.
+
+C. Confusion Matrix
+
+2x2 matrix showing:
+
+True Positives (spam correctly detected)
+
+True Negatives (ham correctly detected)
+
+False Positives (ham mislabeled as spam)
+
+False Negatives (spam missed)
+----------------------------------------------------------------------------------------------
+5. User Interface (Tkinter)
+
+Buttons & Controls:
+
+Load Dataset: Only for custom model.
+
+Train Model: Only for custom model.
+
+Evaluate Model: Works for both models.
+
+Classify SMS: Takes input and shows spam/not spam.
+
+Radio Buttons: Switch between "Custom" and "Pretrained".
+
+Automatically disables buttons irrelevant for the pretrained model (e.g., dataset load and training).
+
+Metrics display: Text widget shows evaluation results.
+
+Result display: Label shows classification for single SMS.
+----------------------------------------------------------------------------------------------
+6. How it All Ties Together
+
+If you pick Custom Model:
+
+Load dataset → train model → evaluate on test set → classify SMS.
+
+If you pick Pretrained Model:
+
+Skip loading/training → evaluate on test set using pretrained pipeline → classify SMS directly.
+
+The flow is intuitive:
+
+Dataset → (train if needed) → predict → metrics/visualization → single SMS classification.
+----------------------------------------------------------------------------------------------
+7. Insights for Studying
+
+Good practice in ML apps:
+
+Clear separation of data preprocessing, modeling, evaluation, and UI.
+
+Normalizing labels ensures consistent binary classification.
+
+Using stratified splits avoids skewed evaluation.
+
+Handling UI interactions based on model choice prevents errors.
+
+Why two models?
+
+Custom SVM is lightweight, interpretable, and trains fast.
+
+Pretrained BERT is powerful, handles complex language, no training needed, but heavier.
+
+Important ML concepts demonstrated:
+
+Text vectorization (TF-IDF)
+
+Support Vector Machines
+
+Hugging Face pipelines
+
+Metrics: accuracy, precision, recall, F1, confusion matrix
+
+Train/test split with stratification
+
+Pipeline-based prediction abstraction (pretrained_pipe)
